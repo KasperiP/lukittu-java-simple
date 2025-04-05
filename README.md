@@ -1,4 +1,4 @@
-# LukittuSimple - License Protected Minecraft Plugin
+# Lukittu simple Java example
 
 A simple Bukkit/Spigot plugin demonstrating integration with the Lukittu license verification system.
 
