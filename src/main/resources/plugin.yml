@@ -1,0 +1,6 @@
+name: LukittuSimple
+version: "${project.version}"
+main: org.lukittu.java_simple.Simple
+api-version: "1.20"
+author: lukittu
+description: A simple Bukkit plugin with Lukittu license verification

@@ -1,0 +1,36 @@
+# Simple Plugin Configuration
+# --------------------------
+
+#############################################################################
+# ⚠️ SECURITY WARNING FOR PRODUCTION USE ⚠️
+#
+# In a production environment, you should NOT expose sensitive Lukittu
+# licensing details in this configuration file. Only the license key should
+# be configurable.
+#
+# All other values (team ID, product ID, and especially the public key)
+# should be hardcoded and obfuscated within your compiled code to prevent
+# tampering and license bypass attempts.
+#
+# Recommended security measures:
+# 1. Use code obfuscation tools (e.g., ProGuard, Zelix KlassMaster)
+# 2. Use native code protection (e.g., JNIC)
+# 3. Implement anti-tampering checks throughout your code
+# 4. Hide all Lukittu-related constants with string encryption
+#############################################################################
+
+# License settings for Lukittu License System
+# You must replace the placeholder values with your actual license details
+license:
+    # Your Lukittu license key from your account
+    key: "YOUR_LICENSE_KEY"
+
+    # Your Lukittu team ID (must be a valid UUID format)
+    team-id: "YOUR_TEAM_ID"
+
+    # Your Lukittu product ID (must be a valid UUID format)
+    product-id: "YOUR_PRODUCT_ID"
+
+    # Your Lukittu RSA public key (Base64 encoded)
+    # Used to verify server responses
+    public-key: "YOUR_PUBLIC_KEY"
