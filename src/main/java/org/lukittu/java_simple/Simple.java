@@ -84,13 +84,14 @@ public final class Simple extends JavaPlugin {
                     licenseConfig.productId(),
                     licenseConfig.publicKey());
 
+            // If license verification failed, disable the plugin
             if (!valid) {
                 // Verification already showed the appropriate error message
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             }
 
-            // Set up periodic heartbeat checks every 15 minutes
+            // Only setup heartbeat and enable plugin if license is valid
             setupHeartbeatScheduler(
                     licenseConfig.key(),
                     licenseConfig.teamId(),
@@ -100,6 +101,7 @@ public final class Simple extends JavaPlugin {
         } catch (Exception e) {
             getLogger().severe("Unexpected error during license verification: " + e.getMessage());
             logMessage("License verification failed due to an unexpected error");
+            // Ensure plugin is always disabled on any exception
             getServer().getPluginManager().disablePlugin(this);
         }
     }
@@ -120,6 +122,7 @@ public final class Simple extends JavaPlugin {
                 LukittuLicenseVerify.sendHeartbeat(teamId, licenseKey, productId);
                 getLogger().fine("Heartbeat sent successfully");
             } catch (Exception e) {
+                // Heartbeat failures should be silent, just log at warning level
                 getLogger().log(Level.WARNING, "Failed to send heartbeat", e);
             }
         }, 15, 15, TimeUnit.MINUTES);

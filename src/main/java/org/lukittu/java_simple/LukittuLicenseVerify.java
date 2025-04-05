@@ -108,8 +108,11 @@ public class LukittuLicenseVerify {
      *                   production)
      * @param publicKey  The public key used to verify the server's signature
      *                   (should be hardcoded in production)
+     * @throws IOException If a network or server error occurs
+     * @throws Exception   If validation fails for any reason
      */
-    public static void verifyKey(String licenseKey, String teamId, String productId, String publicKey) {
+    public static void verifyKey(String licenseKey, String teamId, String productId, String publicKey)
+            throws Exception {
         DEVICE_IDENTIFIER = getHardwareIdentifier();
 
         // Generate a random challenge
@@ -127,7 +130,13 @@ public class LukittuLicenseVerify {
                   "deviceIdentifier": "%s"
                 }""", licenseKey, productId, challenge, VERSION, DEVICE_IDENTIFIER);
 
-        fetchAndHandleResponse(url, jsonBody, publicKey, challenge);
+        boolean verificationSuccess = fetchAndHandleResponse(url, jsonBody, publicKey, challenge);
+
+        // Throw exception if verification failed to ensure it's caught in Simple's
+        // onEnable
+        if (!verificationSuccess) {
+            throw new Exception("License verification failed");
+        }
     }
 
     /**
@@ -165,10 +174,13 @@ public class LukittuLicenseVerify {
      * @param publicKeyBase64 The public key to verify the response
      * @param challenge       The challenge string that should be signed in the
      *                        response
+     * @return true if verification succeeded, false if it failed
+     * @throws IOException If a network error occurs
      */
-    public static void fetchAndHandleResponse(String urlString, String jsonBody, String publicKeyBase64,
-            String challenge) {
+    public static boolean fetchAndHandleResponse(String urlString, String jsonBody, String publicKeyBase64,
+            String challenge) throws IOException {
         HttpURLConnection connection = null;
+        boolean success = false;
 
         try {
             var url = URI.create(urlString).toURL();
@@ -189,7 +201,7 @@ public class LukittuLicenseVerify {
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (var inputStream = connection.getInputStream()) {
-                    handleJsonResponse(inputStream, publicKeyBase64, challenge);
+                    success = handleJsonResponse(inputStream, publicKeyBase64, challenge);
                 }
             } else {
                 try (var errorStream = connection.getErrorStream()) {
@@ -214,11 +226,14 @@ public class LukittuLicenseVerify {
             } catch (IOException e1) {
                 Simple.INSTANCE.getLogger().log(Level.SEVERE, "Failed to parse error response", e1);
             }
+            throw new IOException("Connection to license server failed", e);
         } finally {
             if (connection != null) {
                 connection.disconnect();
             }
         }
+
+        return success;
     }
 
     /**
